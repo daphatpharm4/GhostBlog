@@ -1,1 +1,50 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ghost
+spec:
+  serviceName: ghost
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ghost
+  template:
+    metadata:
+      labels:
+        app: ghost
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: ghost
+        image: ghost:latest
+        ports:
+        - containerPort: 2368
+          name: ghost-web
+        env:
+        - name: url
+          value: "http://your-ghost-blog-url.com"
+        - name: database__client
+          value: "sqlite3"
+        - name: database__connection__filename
+          value: "/var/lib/ghost/content/data/ghost.db"
+        volumeMounts:
+        - name: ghost-content
+          mountPath: /var/lib/ghost/content
+      volumes:
+      - name: ghost-content
+        emptyDir: {}
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghost
+spec:
+  selector:
+    app: ghost
+  ports:
+    - name: ghost-web
+      port: 80
+      targetPort: 2368
+  type: LoadBalancer
