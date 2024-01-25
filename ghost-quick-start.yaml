@@ -23,7 +23,7 @@ spec:
           name: ghost-web
         env:
         - name: url
-          value: "http://your-ghost-blog-url.com"
+          value: "http://test.test"
         - name: database__client
           value: "sqlite3"
         - name: database__connection__filename
